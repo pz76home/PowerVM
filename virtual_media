@@ -1,0 +1,54 @@
+Create the Media repository
+
+mksp -f mediavg hdisk2
+lssp
+lssp -detail -sp mediavg
+
+# Create the repository
+mkrep -sp mediavg -size 50G
+                directory is /var/vio/VMLibrary
+                You can change the size of the VMR with “chrep –size 10G” (NB –size adds the amount specified)
+
+ 
+
+# If you don't have .iso images, you can insert a CD and run:
+mkvopt -name aix6.1_1.iso -dev cd0 -ro
+mkvopt -name aix6.1_2.iso -dev cd0 -ro
+mkvopt -name aix7.1_1.iso -dev cd0 -ro
+mkvopt -name vio220.12.iso -dev cd0 -ro
+
+ 
+
+# Create a file-backed virtual optical device using vhost0 as VSCSI server adapter.
+
+#This creates vtopt0 virtual target device:
+
+mkvdev -fbo -vadapter vhost0 -dev lpar3_cd
+mkvdev -fbo -vadapter vhost1 -dev lpar4_cd
+
+ 
+
+#Check
+
+lsdev -virtual
+
+ 
+
+#Load the file-backed virtual optical device with the virtual media:
+
+loadopt -disk aix6.1_1.iso -vtd lpar3_cd
+loadopt -disk aix6.1_2.iso -vtd lpar3_cd
+loadopt -disk aix7.1_1.iso -vtd lpar4_cd
+
+#Unload the CD
+
+unloadopt -vtd lpar3_cd
+
+ 
+
+# Checks
+
+lsmap -vadapter vhost0
+
+lsvopt                    # List the contents of the file backed virt  optical devices:
+lsrep                      # List the contents of the repository:
